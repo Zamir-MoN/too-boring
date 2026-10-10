@@ -1,0 +1,7 @@
+{
+  "YOUR_GUILD_ID": {
+    "movieChannelId": "YOUR_MOVIE_CHANNEL_ID",
+    "seriesChannelId": "YOUR_SERIES_CHANNEL_ID",
+    "roleId": null
+  }
+}
