@@ -14,6 +14,7 @@ A modern, automated Discord bot built with **Node.js** and **discord.js v14** fo
 - 📩 **Add to DM**: Members can click a button to send the recommendation directly to their private DMs.
 - 🔴 **Dynamic DND Presence**: 24/7 Do-Not-Disturb status with rotating activity descriptions.
 - 👋 **Automatic Setup Greeting**: Sends a welcome embed with setup instructions when invited to new servers.
+- 💓 **Public Health Check**: Built-in lightweight HTTP endpoint at `/health` and `/ping` with CORS support for uptime dashboards (e.g. Pengo Stats).
 
 ---
 
@@ -39,6 +40,7 @@ In your Railway project, click on your service, go to the **Variables** tab, and
 | `WATCH_REGION` | Country code for streaming providers | `IN` (default) or `US`, etc. |
 | `DISCORD_GUILD_ID` | Test server ID for instant slash command updates | Optional |
 | `CONFIG_DATA` | Optional preloaded server channel config JSON | Optional |
+| `PORT` | Health check HTTP server port | `3001` (assigned automatically by Railway) |
 
 > ⚠️ **Note**: Railway will automatically detect `npm start` and run `node index.js`.
 

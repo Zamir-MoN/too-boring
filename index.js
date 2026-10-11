@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
@@ -51,6 +52,52 @@ const TMDB_READ_TOKEN = process.env.TMDB_READ_TOKEN;
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const OMDB_API_KEY = process.env.OMDB_API_KEY;
 const WATCH_REGION = (process.env.WATCH_REGION || "IN").toUpperCase();
+const PORT = process.env.PORT || process.env.HEALTH_PORT || 3001;
+
+// Lightweight public health check endpoint for monitoring dashboards (e.g. Pengo Stats)
+const healthServer = http.createServer((req, res) => {
+  // CRITICAL: CORS headers allowing cross-origin browser monitoring
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  const host = req.headers.host || `localhost:${PORT}`;
+  let pathname = "/";
+  try {
+    pathname = new URL(req.url, `http://${host}`).pathname;
+  } catch {
+    pathname = req.url.split("?")[0] || "/";
+  }
+
+  // Handle /health, /ping, or root
+  if ((req.method === "GET" || req.method === "HEAD") && (pathname === "/health" || pathname === "/ping" || pathname === "/")) {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    if (req.method === "HEAD") {
+      res.end();
+    } else {
+      res.end(JSON.stringify({ status: "online" }));
+    }
+    return;
+  }
+
+  res.writeHead(404, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ error: "Not Found" }));
+});
+
+healthServer.on("error", (err) => {
+  console.error(`[HEALTH] Health check server error: ${err.message}`);
+});
+
+healthServer.listen(PORT, () => {
+  console.log(`🌐 Health check server online at http://localhost:${PORT}/health (Port: ${PORT})`);
+});
 
 if (!DISCORD_TOKEN) {
   console.error("Missing DISCORD_TOKEN. Copy .env.example to .env and configure it.");
